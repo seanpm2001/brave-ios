@@ -177,18 +177,18 @@ public class TransactionConfirmationStore: ObservableObject {
   }
 
   func rejectAllTransactions(completion: @escaping (Bool) -> Void) {
-    let dispatchGroup = DispatchGroup()
-    var allRejectsSucceeded = true
-    for transaction in unapprovedTxs {
-      dispatchGroup.enter()
-      reject(transaction: transaction, completion: { success in
-        defer { dispatchGroup.leave() }
+    Task { @MainActor in
+      var allRejectsSucceeded = true
+      for transaction in self.unapprovedTxs {
+        let success = await txService.rejectTransaction(
+          transaction.coin,
+          chainId: transaction.chainId,
+          txMetaId: transaction.id
+        )
         if !success {
           allRejectsSucceeded = false
         }
-      })
-    }
-    dispatchGroup.notify(queue: .main) {
+      }
       completion(allRejectsSucceeded)
     }
   }

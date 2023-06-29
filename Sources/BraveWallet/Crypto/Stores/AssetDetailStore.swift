@@ -290,20 +290,10 @@ class AssetDetailStore: ObservableObject {
     else { return [] }
     let userVisibleAssets = assetManager.getAllUserAssetsInNetworkAssets(networks: [network]).flatMap { $0.tokens }
     let allTokens = await blockchainRegistry.allTokens(network.chainId, coin: network.coin)
-    let allTransactions = await withTaskGroup(of: [BraveWallet.TransactionInfo].self) { @MainActor group -> [BraveWallet.TransactionInfo] in
-      for account in keyring.accountInfos {
-        group.addTask { @MainActor in
-          await self.txService.allTransactionInfo(
-            network.coin,
-            chainId: network.chainId,
-            from: account.address
-          )
-        }
-      }
-      return await group.reduce([BraveWallet.TransactionInfo](), { partialResult, prior in
-        return partialResult + prior
-      })
-    }
+    let allTransactions = await txService.allTransactions(
+      chainIdsForCoin: [.eth: [network.chainId]],
+      for: [keyring]
+    )
     var solEstimatedTxFees: [String: UInt64] = [:]
     if token.coin == .sol {
       solEstimatedTxFees = await solTxManagerProxy.estimatedTxFees(for: allTransactions)
