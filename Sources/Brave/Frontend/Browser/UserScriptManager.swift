@@ -103,6 +103,7 @@ class UserScriptManager {
     case windowRenderHelper
     case readyStateHelper
     case ethereumProvider
+    case ethereumEIP6963
     case solanaProvider
     case youtubeQuality
     
@@ -117,6 +118,7 @@ class UserScriptManager {
       case .requestBlocking: return RequestBlockingContentScriptHandler.userScript
       case .trackerProtectionStats: return ContentBlockerHelper.userScript
       case .ethereumProvider: return EthereumProviderScriptHandler.userScript
+      case .ethereumEIP6963: return loadScript(named: "WalletEthereumEIP6963Script")
       case .solanaProvider: return SolanaProviderScriptHandler.userScript
         
       // Always enabled scripts
@@ -305,6 +307,12 @@ class UserScriptManager {
         
         if let walletEthProviderScript = walletEthProviderScript {
           scriptController.addUserScript(walletEthProviderScript)
+          
+          if let eip6963Script = self.dynamicScripts[.ethereumEIP6963] {
+            // Inject EIP-6963 support. Requires `ethereum.on` from
+            // `walletEthProviderScript` so it must be injected after.
+            scriptController.addUserScript(eip6963Script)
+          }
         }
       }
       

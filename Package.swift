@@ -439,6 +439,7 @@ var braveTarget: PackageDescription.Target = .target(
     .copy("Frontend/UserContent/UserScripts/Scripts_Dynamic/Scripts/Paged/TrackingProtectionStats.js"),
     .copy("Frontend/UserContent/UserScripts/Scripts_Dynamic/Scripts/Paged/RewardsReportingScript.js"),
     .copy("Frontend/UserContent/UserScripts/Scripts_Dynamic/Scripts/Paged/WalletEthereumProviderScript.js"),
+    .copy("Frontend/UserContent/UserScripts/Scripts_Dynamic/Scripts/Paged/WalletEthereumEIP6963Script.js"),
     .copy("Frontend/UserContent/UserScripts/Scripts_Dynamic/Scripts/Paged/WalletSolanaProviderScript.js"),
     .copy("Frontend/UserContent/UserScripts/Scripts_Dynamic/Scripts/Paged/YoutubeQualityScript.js"),
     .copy("Frontend/UserContent/UserScripts/Scripts_Dynamic/Scripts/Sandboxed/DeAmpScript.js"),
