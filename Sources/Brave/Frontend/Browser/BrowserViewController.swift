@@ -33,6 +33,7 @@ import Onboarding
 import Growth
 import BraveShields
 import CertificateUtilities
+import ScreenTime
 
 private let KVOs: [KVOConstants] = [
   .estimatedProgress,
@@ -373,6 +374,10 @@ public class BrowserViewController: UIViewController {
         self.braveCore.syncAPI.leaveSyncGroup()
       }
     }
+    
+    if Preferences.Privacy.screenTimeEnabled.value {
+      screenTimeViewController = STWebpageController()
+    }
   }
 
   deinit {
@@ -452,6 +457,7 @@ public class BrowserViewController: UIViewController {
     Preferences.Playlist.syncSharedFoldersAutomatically.observe(from: self)
     Preferences.NewTabPage.backgroundSponsoredImages.observe(from: self)
     ShieldPreferences.blockAdsAndTrackingLevelRaw.observe(from: self)
+    Preferences.Privacy.screenTimeEnabled.observe(from: self)
     
     pageZoomListener = NotificationCenter.default.addObserver(forName: PageZoomView.notificationName, object: nil, queue: .main) { [weak self] _ in
       self?.tabManager.allTabs.forEach({
@@ -654,6 +660,7 @@ public class BrowserViewController: UIViewController {
   func updateToolbarCurrentURL(_ currentURL: URL?) {
     topToolbar.currentURL = currentURL
     collapsedURLBarView.currentURL = currentURL
+    updateScreenTimeUrl(currentURL)
   }
 
   override public func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -1180,6 +1187,9 @@ public class BrowserViewController: UIViewController {
 
   /// A layout guide defining where the favorites and NTP overlay are placed
   let pageOverlayLayoutGuide = UILayoutGuide()
+  
+  /// A single controller per bvc/window. Using one controller per tab or webview causes crashes.
+  var screenTimeViewController: STWebpageController?
 
   override public func updateViewConstraints() {
     readerModeBar?.snp.remakeConstraints { make in
@@ -1190,6 +1200,16 @@ public class BrowserViewController: UIViewController {
       }
       make.height.equalTo(UIConstants.toolbarHeight)
       make.leading.trailing.equalTo(self.view)
+    }
+    
+    if let screenTimeViewController = screenTimeViewController {
+      webViewContainer.addSubview(screenTimeViewController.view)
+      addChild(screenTimeViewController)
+      screenTimeViewController.didMove(toParent: self)
+      
+      screenTimeViewController.view.snp.remakeConstraints {
+        $0.edges.equalTo(webViewContainer)
+      }
     }
     
     webViewContainer.snp.remakeConstraints { make in
@@ -3165,6 +3185,19 @@ extension BrowserViewController: PreferencesObserver {
       syncPlaylistFolders()
     case Preferences.NewTabPage.backgroundSponsoredImages.key:
       recordAdsUsageType()
+    case Preferences.Privacy.screenTimeEnabled.key:
+      if Preferences.Privacy.screenTimeEnabled.value {
+        screenTimeViewController = STWebpageController()
+        if let tab = tabManager.selectedTab {
+          recordScreentimeUsage(for: tab)
+        }
+        updateViewConstraints()
+      } else {
+        screenTimeViewController?.view.removeFromSuperview()
+        screenTimeViewController?.removeFromParent()
+        screenTimeViewController?.suppressUsageRecording = true
+        screenTimeViewController = nil
+      }
     default:
       Logger.module.debug("Received a preference change for an unknown key: \(key, privacy: .public) on \(type(of: self), privacy: .public)")
       break
