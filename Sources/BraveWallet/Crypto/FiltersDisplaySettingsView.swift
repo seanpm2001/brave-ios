@@ -191,7 +191,7 @@ struct FiltersDisplaySettingsView: View {
         }
         .padding(.horizontal)
       }
-      .background(Color(uiColor: WalletV2Design.containerBackground))
+      .background(Color(.containerBackground))
       .safeAreaInset(edge: .bottom, content: {
         saveChangesContainer
       })
@@ -366,7 +366,7 @@ struct FiltersDisplaySettingsView: View {
       Button(action: { dismiss() }) {
         Text(Strings.CancelString)
           .fontWeight(.semibold)
-          .foregroundColor(Color(uiColor: WalletV2Design.textInteractive))
+          .foregroundColor(Color(.textInteractive))
           .frame(maxWidth: .infinity)
           .padding(.vertical, 4)
       }
@@ -374,7 +374,7 @@ struct FiltersDisplaySettingsView: View {
     .padding(.horizontal)
     .padding(.vertical, 14)
     .background(
-      Color(uiColor: WalletV2Design.containerBackground)
+      Color(.containerBackground)
         .ignoresSafeArea()
     )
     .shadow(color: Color.black.opacity(0.04), radius: 16, x: 0, y: -8)
@@ -461,11 +461,11 @@ private struct AllSelectedView: View {
   
   var body: some View {
     Text(title)
-      .foregroundColor(Color(uiColor: WalletV2Design.extendedGray50))
+      .foregroundColor(Color(.gray50))
       .font(.footnote.weight(.semibold))
       .padding(.horizontal, 2)
       .padding(4)
-      .background(Color(uiColor: WalletV2Design.extendedGray20))
+      .background(Color(.gray20))
       .clipShape(RoundedRectangle(cornerRadius: 6))
   }
 }
@@ -485,23 +485,23 @@ private struct FilterLabelView: View {
   var body: some View {
     HStack {
       if let icon {
-        Color(uiColor: WalletV2Design.containerHighlight)
+        Color(.containerHighlight)
           .clipShape(Circle())
           .frame(width: icon.iconContainerSize, height: icon.iconContainerSize)
           .overlay {
             Image(braveSystemName: icon.braveSystemName)
               .imageScale(.medium)
               .font(.headline)
-              .foregroundColor(Color(uiColor: WalletV2Design.iconDefault))
+              .foregroundColor(Color(.iconDefault))
           }
       }
       VStack(alignment: .leading, spacing: 2) {
         Text(title)
           .font(.body.weight(.semibold))
-          .foregroundColor(Color(uiColor: WalletV2Design.text01))
+          .foregroundColor(Color(.legacyText1))
         Text(description)
           .font(.footnote)
-          .foregroundColor(Color(uiColor: WalletV2Design.textSecondary))
+          .foregroundColor(Color(.textSecondary))
       }
       .multilineTextAlignment(.leading)
     }
@@ -580,7 +580,7 @@ struct FilterPickerRowView<T: Equatable & Identifiable & Hashable, Content: View
           $0
         }
       })
-      .foregroundColor(Color(WalletV2Design.textInteractive))
+      .foregroundColor(Color(.textInteractive))
       .transaction { transaction in
         transaction.animation = nil
         transaction.disablesAnimations = true
@@ -591,7 +591,7 @@ struct FilterPickerRowView<T: Equatable & Identifiable & Hashable, Content: View
 
 struct DividerLine: View {
   var body: some View {
-    Color(uiColor: WalletV2Design.dividerSubtle)
+    Color(.dividerSubtle)
       .frame(height: 1)
   }
 }
